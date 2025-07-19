@@ -29,7 +29,7 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
   const averageRate = totalMessages > 0 ? (totalReplies / totalMessages) * 100 : 0
 
   // Couleurs LinkedIn-style
-  const getBarColor = (rate: number, index: number) => {
+  const getBarColor = (index: number) => {
     const colors = [
       "from-blue-500 to-blue-600", // LinkedIn blue
       "from-green-500 to-green-600", // Success green
@@ -103,7 +103,7 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
                       <div
-                        className={`w-3 h-3 rounded-full bg-gradient-to-r ${getBarColor(item.replyRate, index)}`}
+                        className={`w-3 h-3 rounded-full bg-gradient-to-r ${getBarColor(index)}`}
                       ></div>
                       <h3 className="font-semibold text-slate-800 group-hover:text-slate-900">{item.type}</h3>
                     </div>
@@ -125,7 +125,7 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
                 <div className="relative">
                   <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
                     <div
-                      className={`h-full bg-gradient-to-r ${getBarColor(item.replyRate, index)} transition-all duration-1000 ease-out relative`}
+                      className={`h-full bg-gradient-to-r ${getBarColor(index)} transition-all duration-1000 ease-out relative`}
                       style={{
                         width: `${(animatedRate / maxRate) * 100}%`,
                       }}
