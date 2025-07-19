@@ -3,12 +3,19 @@ import type { HistoryEntry, WeeklyStats } from '../types/stats'
 
 export const useWeeklyStats = (historyEntries: HistoryEntry[] | undefined) => {
   // Fonction pour obtenir le début de la semaine
-  const getWeekStart = (date: Date): Date => {
-    const d = new Date(date)
-    const day = d.getDay()
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1) // Lundi comme début de semaine
-    return new Date(d.setDate(diff))
-  }
+const getWeekStart = (date: Date): Date => {
+  const d = new Date(date)
+  const day = d.getDay()
+  
+  // Calculer combien de jours reculer pour arriver au lundi
+  const daysToSubtract = day === 0 ? 6 : day - 1 // Dimanche = 6 jours, Lundi = 0, Mardi = 1, etc.
+  
+  // Créer une nouvelle date pour éviter les mutations
+  const weekStart = new Date(d.getFullYear(), d.getMonth(), d.getDate() - daysToSubtract)
+  weekStart.setHours(0, 0, 0, 0)
+  
+  return weekStart
+}
 
   // Fonction pour formater une semaine
   const formatWeek = (weekStart: Date): string => {
