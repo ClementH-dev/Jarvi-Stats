@@ -12,8 +12,6 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    console.log("📊 Stats par type pour le graphique:", typeStats)
-
     // Animation d'entrée
     setIsVisible(true)
     const timer = setTimeout(() => {

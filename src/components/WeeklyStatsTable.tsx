@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import type { WeeklyStats, TypeStats } from '../types/stats'
 import { Table, type TableColumn } from './TableComponent'
 import { Pagination } from './Pagination'
@@ -21,11 +21,6 @@ export const WeeklyStatsTable = ({ weeklyStats, typeStats }: WeeklyStatsTablePro
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const currentItems = weeklyStats.slice(startIndex, endIndex)
-
-  useEffect(() => {
-    console.log('📅 Stats hebdomadaires pour le tableau:', weeklyStats)
-    console.log('📊 Types pour le tableau:', typeStats)
-  }, [weeklyStats, typeStats])
 
   // Configuration des colonnes
   const columns = useMemo(() => [

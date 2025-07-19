@@ -23,12 +23,6 @@ export const useDateFilter = (weeklyStats: WeeklyStats[], historyEntries?: Histo
     actualStartDate.setHours(0, 0, 0, 0)
     actualEndDate.setHours(23, 59, 59, 999)
 
-    console.log('🔍 Filtrage par dates:', {
-      startDate: actualStartDate.toISOString(),
-      endDate: actualEndDate.toISOString(),
-      totalWeeks: weeklyStats.length
-    })
-
     return weeklyStats.filter(week => {
       // Vérifier si la semaine chevauche avec la période sélectionnée
       const weekStart = new Date(week.weekStart)

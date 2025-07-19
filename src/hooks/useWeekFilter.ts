@@ -29,14 +29,6 @@ export const useWeekFilter = (weeklyStats: WeeklyStats[], historyEntries?: Histo
     const startDate = startWeekObj.weekStart
     const endDate = endWeekObj.weekEnd
 
-    console.log('🔍 Filtrage:', {
-      actualStartWeek,
-      actualEndWeek,
-      startDate,
-      endDate,
-      totalWeeks: weeklyStats.length
-    })
-
     return weeklyStats.filter(week => {
       const isInRange = week.weekStart >= startDate && week.weekEnd <= endDate
       return isInRange
