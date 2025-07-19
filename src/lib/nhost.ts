@@ -1,8 +1,4 @@
 import { NhostClient } from '@nhost/nhost-js';
-import { validateEnv } from './env';
-
-// Validation des variables d'environnement
-validateEnv();
 
 // Configuration Nhost avec les variables d'environnement
 export const nhost = new NhostClient({
