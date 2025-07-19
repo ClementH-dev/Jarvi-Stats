@@ -1,4 +1,5 @@
 import './App.css'
+import { HistoryEntries } from './components/HistoryEntries'
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
         <p>Application de test technique - Nhost + React + TypeScript</p>
       </header>
       <main>
+        <HistoryEntries />
       </main>
     </div>
   )
