@@ -3,6 +3,7 @@ import type { WeeklyStats, TypeStats } from '../types/stats'
 import { Table, type TableColumn } from './TableComponent'
 import { Pagination } from './Pagination'
 import { WeeklyLineChart } from './WeeklyLineChart'
+import { exportToCSV } from '../utils/csvExport'
 
 interface WeeklyStatsTableProps {
   weeklyStats: WeeklyStats[]
@@ -66,6 +67,15 @@ export const WeeklyStatsTable = ({ weeklyStats, typeStats }: WeeklyStatsTablePro
         
         {/* Toggle View Mode */}
         <div style={{ display: 'flex', border: '1px solid #ddd', borderRadius: '5px' }}>
+          {viewMode === 'table' && (
+            <button
+              onClick={() => exportToCSV(weeklyStats, typeStats)}
+              className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 text-sm font-medium me-2"
+            >
+              <span>📊</span>
+              <span>Exporter CSV</span>
+            </button>
+          )}
           <button
             onClick={() => setViewMode('table')}
             style={{
