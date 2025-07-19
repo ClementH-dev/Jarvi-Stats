@@ -1,15 +1,19 @@
 import { useEffect, useState, useMemo } from 'react'
 import type { WeeklyStats, TypeStats } from '../types/stats'
-import { Table, type TableColumn } from './Table'
+import { Table, type TableColumn } from './TableComponent'
 import { Pagination } from './Pagination'
+import { WeeklyLineChart } from './WeeklyLineChart'
 
 interface WeeklyStatsTableProps {
   weeklyStats: WeeklyStats[]
   typeStats: TypeStats[]
 }
 
+type ViewMode = 'table' | 'chart'
+
 export const WeeklyStatsTable = ({ weeklyStats, typeStats }: WeeklyStatsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1)
+  const [viewMode, setViewMode] = useState<ViewMode>('table')
   const itemsPerPage = 10
   
   // Calcul de la pagination
@@ -62,23 +66,61 @@ export const WeeklyStatsTable = ({ weeklyStats, typeStats }: WeeklyStatsTablePro
 
   return (
     <div>
-      <h2>Statistiques par Semaine</h2>
-      
-      <Table 
-        columns={columns}
-        data={currentItems}
-        renderCell={renderCell}
-      />
-
-      <Pagination 
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
-
-      <div>
-        Affichage de {startIndex + 1} à {Math.min(endIndex, weeklyStats.length)} sur {weeklyStats.length} semaines
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2>Statistiques par Semaine</h2>
+        
+        {/* Toggle View Mode */}
+        <div style={{ display: 'flex', border: '1px solid #ddd', borderRadius: '5px' }}>
+          <button
+            onClick={() => setViewMode('table')}
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              backgroundColor: viewMode === 'table' ? '#007bff' : '#f8f9fa',
+              color: viewMode === 'table' ? 'white' : '#333',
+              cursor: 'pointer',
+              borderRadius: '5px 0 0 5px'
+            }}
+          >
+            📋 Tableau
+          </button>
+          <button
+            onClick={() => setViewMode('chart')}
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              backgroundColor: viewMode === 'chart' ? '#007bff' : '#f8f9fa',
+              color: viewMode === 'chart' ? 'white' : '#333',
+              cursor: 'pointer',
+              borderRadius: '0 5px 5px 0'
+            }}
+          >
+            📈 Graphique
+          </button>
+        </div>
       </div>
+
+      {viewMode === 'table' ? (
+        <div>
+          <Table 
+            columns={columns}
+            data={currentItems}
+            renderCell={renderCell}
+          />
+
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+
+          <div>
+            Affichage de {startIndex + 1} à {Math.min(endIndex, weeklyStats.length)} sur {weeklyStats.length} semaines
+          </div>
+        </div>
+      ) : (
+        <WeeklyLineChart weeklyStats={weeklyStats} typeStats={typeStats} />
+      )}
     </div>
   )
 }
