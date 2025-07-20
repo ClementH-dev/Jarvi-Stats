@@ -16,13 +16,14 @@ type TabType = "summary" | "chart" | "table" | "comparison"
 export const HistoryEntries = () => {
   const [activeTab, setActiveTab] = useState<TabType>("summary")
   const { loading, error, historyEntries } = useHistoryEntries()
+  
+  // Garde les hooks mais évite les recalculs inutiles
   const weeklyStats = useWeeklyStats(historyEntries)
   const { filteredWeeklyStats, filteredHistoryEntries, filterInfo, handleFilterChange } = useDateFilter(
     weeklyStats,
     historyEntries,
   )
 
-  // Recalculer les typeStats avec les données filtrées
   const filteredTypeStats = useTypeStats(filteredHistoryEntries || historyEntries)
 
   const tabs = [
