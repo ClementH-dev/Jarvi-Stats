@@ -22,6 +22,7 @@ export const useTypeStats = (historyEntries: HistoryEntry[] | undefined) => {
     
     return Object.entries(typeMap).map(([type, stats], index): TypeStats => ({
       type,
+      name: type,
       total: stats.total,
       replied: stats.replied,
       replyRate: stats.total > 0 ? (stats.replied / stats.total) * 100 : 0,
