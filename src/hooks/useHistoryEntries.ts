@@ -1,13 +1,13 @@
 import { gql, useQuery } from '@apollo/client'
 import type { HistoryEntry } from '../types/stats'
 
-interface OptimizedHistoryEntriesResponse {
+interface HistoryEntriesResponse {
   historyentries: HistoryEntry[]
 }
 
 const GET_HISTORY_ENTRIES = gql`
   query GetHistoryEntries {
-    # Données complètes pour stats précises
+    # Toutes les données pour l'affichage et les filtres - chargement en arrière-plan
     historyentries(
       where: {
         userId: {_eq: "32ca93da-0cf6-4608-91e7-bc6a2dbedcd1"}
@@ -25,48 +25,26 @@ const GET_HISTORY_ENTRIES = gql`
   }
 `
 
-export const useHistoryEntries = () => {
-  const { loading, error, data } = useQuery<OptimizedHistoryEntriesResponse>(GET_HISTORY_ENTRIES)
+export const useHistoryEntries = (shouldLoad = true) => {
+  const { loading, error, data } = useQuery<HistoryEntriesResponse>(GET_HISTORY_ENTRIES, {
+    // Cache
+    fetchPolicy: 'cache-first',
+    // Ne pas notifier les changements de statut 
+    notifyOnNetworkStatusChange: false,
+    errorPolicy: 'all',
+    // Chargement conditionnel
+    skip: !shouldLoad
+  })
   
   const historyEntries = data?.historyentries || []
-  
-  // Calculs rapides côté React
-  const emailEntries = historyEntries.filter(entry => entry.type === 'EMAIL_SENT')
-  const linkedinMessageEntries = historyEntries.filter(entry => entry.type === 'LINKEDIN_MESSAGE_SENT')
-  const linkedinInmailEntries = historyEntries.filter(entry => entry.type === 'LINKEDIN_INMAIL_SENT')
-  
-  const globalStats = {
-    totalMessages: historyEntries.length, // Utilise les données réelles chargées
-    
-    emailStats: {
-      sent: emailEntries.length,
-      replied: emailEntries.filter(entry => entry.triggerHasBeenRepliedTo).length,
-      responseRate: emailEntries.length 
-        ? ((emailEntries.filter(entry => entry.triggerHasBeenRepliedTo).length / emailEntries.length) * 100).toFixed(1)
-        : '0'
-    },
-    
-    linkedinMessageStats: {
-      sent: linkedinMessageEntries.length,
-      replied: linkedinMessageEntries.filter(entry => entry.triggerHasBeenRepliedTo).length,
-      responseRate: linkedinMessageEntries.length 
-        ? ((linkedinMessageEntries.filter(entry => entry.triggerHasBeenRepliedTo).length / linkedinMessageEntries.length) * 100).toFixed(1)
-        : '0'
-    },
-    
-    linkedinInmailStats: {
-      sent: linkedinInmailEntries.length,
-      replied: linkedinInmailEntries.filter(entry => entry.triggerHasBeenRepliedTo).length,
-      responseRate: linkedinInmailEntries.length 
-        ? ((linkedinInmailEntries.filter(entry => entry.triggerHasBeenRepliedTo).length / linkedinInmailEntries.length) * 100).toFixed(1)
-        : '0'
-    }
-  }
   
   return {
     loading,
     error,
     historyEntries,
-    globalStats
+    // Indicateur pour savoir si les données complètes sont prêtes
+    isDataReady: !loading && !error,
+    // Nombre d'entrées chargées pour debug/info
+    loadedCount: historyEntries.length
   }
 }

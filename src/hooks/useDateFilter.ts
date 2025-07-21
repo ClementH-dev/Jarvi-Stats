@@ -11,6 +11,8 @@ export const useDateFilter = (weeklyStats: WeeklyStats[], historyEntries?: Histo
   }
 
   const filteredWeeklyStats = useMemo(() => {
+    if (!weeklyStats || weeklyStats.length === 0) return []
+    
     if (!startDate && !endDate) {
       return weeklyStats
     }
@@ -36,7 +38,9 @@ export const useDateFilter = (weeklyStats: WeeklyStats[], historyEntries?: Histo
   }, [weeklyStats, startDate, endDate])
 
   const filteredHistoryEntries = useMemo(() => {
-    if (!historyEntries || (!startDate && !endDate)) {
+    if (!historyEntries || historyEntries.length === 0) return []
+    
+    if (!startDate && !endDate) {
       return historyEntries
     }
 

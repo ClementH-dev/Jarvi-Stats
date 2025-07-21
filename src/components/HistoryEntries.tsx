@@ -1,30 +1,45 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { PerformanceChart } from "./PerformanceChart"
 import { WeeklyStatsTable } from "./WeeklyStatsTable"
 import { GlobalSummary } from "./GlobalSummary"
 import { DateRangeFilter } from "./DateRangeFilter"
 import { PeriodComparison } from "./PeriodComparison"
-import { useHistoryEntries } from "../hooks/useHistoryEntries"
+import { useOptimizedData } from "../hooks/useOptimizedData"
 import { useWeeklyStats } from "../hooks/useWeeklyStats"
-import { useTypeStats } from "../hooks/useTypeStats"
 import { useDateFilter } from "../hooks/useDateFilter"
+import { useTypeStats } from "../hooks/useTypeStats"
 
 type TabType = "summary" | "chart" | "table" | "comparison"
 
 export const HistoryEntries = () => {
   const [activeTab, setActiveTab] = useState<TabType>("summary")
-  const { loading, error, historyEntries } = useHistoryEntries()
   
-  // Garde les hooks mais évite les recalculs inutiles
-  const weeklyStats = useWeeklyStats(historyEntries)
+  // Hook ude chargement de donnée
+  const {
+    globalStats,
+    historyEntries,
+    statsLoading,
+    dataLoading,
+    statsError,
+    dataError,
+    isStatsReady,
+    getTypeStats,
+    shouldUseGlobalStats
+  } = useOptimizedData(true)
+  
+  // éviter les recalculs coûteux avec des données vides
+  const safeHistoryEntries = historyEntries || []
+  const weeklyStats = useWeeklyStats(safeHistoryEntries)
   const { filteredWeeklyStats, filteredHistoryEntries, filterInfo, handleFilterChange } = useDateFilter(
     weeklyStats,
-    historyEntries,
+    safeHistoryEntries,
   )
 
-  const filteredTypeStats = useTypeStats(filteredHistoryEntries || historyEntries)
+  // Calcul des TypeStats
+  const globalTypeStats = useMemo(() => getTypeStats(false), [getTypeStats])
+  const filteredTypeStats = useTypeStats(filteredHistoryEntries || [])
 
   const tabs = [
     { id: "summary" as TabType, label: "Résumé Global", icon: "📊" },
@@ -32,32 +47,38 @@ export const HistoryEntries = () => {
     { id: "table" as TabType, label: "Tableau Hebdo", icon: "📋" },
     { id: "comparison" as TabType, label: "Comparaison", icon: "⚖️" },
   ]
+  
+  const isFiltered = useMemo(() => filterInfo?.isFiltered || false, [filterInfo?.isFiltered])
+  const useGlobalData = useMemo(() => shouldUseGlobalStats(isFiltered), [shouldUseGlobalStats, isFiltered])
+  
+  const typeStats = useMemo(() => {
+    if (!isFiltered && isStatsReady) {
+      // Pas de filtre : utiliser les stats globales optimisées
+      return globalTypeStats
+    } else {
+      // Filtre actif : utiliser les stats calculées sur les données filtrées
+      return filteredTypeStats
+    }
+  }, [isFiltered, isStatsReady, globalTypeStats, filteredTypeStats])
 
-  if (loading) {
+  // Gestion des erreurs
+  if (statsError || dataError) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+        <div className="text-red-600 text-4xl mb-4">❌</div>
+        <p className="text-red-800 font-medium">Erreur : {(statsError || dataError)?.message}</p>
+      </div>
+    )
+  }
+
+  // Loader principal seulement si même les stats rapides ne sont pas prêtes
+  if (!isStatsReady && statsLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-slate-600 text-lg">Chargement des statistiques...</p>
         </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-        <div className="text-red-600 text-4xl mb-4">❌</div>
-        <p className="text-red-800 font-medium">Erreur : {error.message}</p>
-      </div>
-    )
-  }
-
-  if (!historyEntries) {
-    return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-        <div className="text-yellow-600 text-4xl mb-4">📭</div>
-        <p className="text-yellow-800 font-medium">Aucune donnée disponible</p>
       </div>
     )
   }
@@ -122,29 +143,52 @@ export const HistoryEntries = () => {
           {activeTab === "summary" && (
             <div className="animate-fadeIn">
               <GlobalSummary
-                historyEntries={filteredHistoryEntries || historyEntries}
-                typeStats={filteredTypeStats}
+                typeStats={typeStats}
                 weeklyStats={filteredWeeklyStats}
                 filterInfo={filterInfo}
+                globalStats={globalStats}
+                historyEntries={filteredHistoryEntries || historyEntries}
               />
             </div>
           )}
 
           {activeTab === "chart" && (
             <div className="animate-fadeIn">
-              <PerformanceChart typeStats={filteredTypeStats} />
+              {/* Performance Chart peut utiliser les données agrégées directement */}
+              {!useGlobalData && dataLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-slate-600">Chargement des données pour le graphique...</p>
+                </div>
+              ) : (
+                <PerformanceChart typeStats={typeStats} />
+              )}
             </div>
           )}
 
           {activeTab === "table" && (
             <div className="animate-fadeIn">
-              <WeeklyStatsTable weeklyStats={filteredWeeklyStats} typeStats={filteredTypeStats} />
+              {dataLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-slate-600">Chargement des données du tableau...</p>
+                </div>
+              ) : (
+                <WeeklyStatsTable weeklyStats={filteredWeeklyStats} typeStats={typeStats} />
+              )}
             </div>
           )}
 
           {activeTab === "comparison" && (
             <div className="animate-fadeIn">
-              <PeriodComparison historyEntries={historyEntries} />
+              {dataLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-slate-600">Chargement des données de comparaison...</p>
+                </div>
+              ) : (
+                <PeriodComparison historyEntries={historyEntries} />
+              )}
             </div>
           )}
         </div>

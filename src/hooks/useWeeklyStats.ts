@@ -30,7 +30,8 @@ const getWeekStart = (date: Date): Date => {
   }
 
   const weeklyStats = useMemo(() => {
-    if (!historyEntries) return []
+    // ✅ OPTIMISATION CRITIQUE : retour anticipé pour éviter les calculs inutiles
+    if (!historyEntries || historyEntries.length === 0) return []
     
     const weeklyMap: Record<string, WeeklyStats> = {}
     

@@ -4,7 +4,6 @@ import type { HistoryEntry, WeeklyStats, TypeStats } from "../types/stats"
 import { MetricCard } from "./MetricCard"
 
 interface GlobalSummaryProps {
-  historyEntries: HistoryEntry[]
   typeStats: TypeStats[]
   weeklyStats: WeeklyStats[]
   filterInfo?: {
@@ -16,18 +15,44 @@ interface GlobalSummaryProps {
     endDateFormatted?: string
     isSingleDate?: boolean
   } | null
+  // Props pour l'optimisation
+  globalStats?: {
+    totalMessages: number
+    emailStats: { sent: number; replied: number; responseRate: string }
+    linkedinMessageStats: { sent: number; replied: number; responseRate: string }
+    linkedinInmailStats: { sent: number; replied: number; responseRate: string }
+  }
+  historyEntries?: HistoryEntry[] // Pour les filtres
 }
 
-export const GlobalSummary = ({ historyEntries, typeStats, weeklyStats, filterInfo }: GlobalSummaryProps) => {
-  const totalReplies = historyEntries.filter((e) => e.triggerHasBeenRepliedTo).length
-  const globalReplyRate = historyEntries.length > 0 ? (totalReplies / historyEntries.length) * 100 : 0
+export const GlobalSummary = ({ typeStats, weeklyStats, filterInfo, globalStats, historyEntries }: GlobalSummaryProps) => {
+  // Donnée filtrée
+  const shouldUseGlobalStats = !filterInfo?.isFiltered
+  
+  const actualHistoryEntries = historyEntries || []
+  
+  // Protection contre globalStats undefined
+  if (shouldUseGlobalStats && !globalStats) {
+    return <div className="text-center p-8">⏳ Chargement des statistiques...</div>
+  }
+  
+  const totalMessages = shouldUseGlobalStats ? globalStats!.totalMessages : actualHistoryEntries.length
+  
+  const totalReplies = shouldUseGlobalStats 
+    ? (globalStats!.emailStats.replied + globalStats!.linkedinMessageStats.replied + globalStats!.linkedinInmailStats.replied)
+    : actualHistoryEntries.filter((e) => e.triggerHasBeenRepliedTo).length
+    
+  const globalReplyRate = shouldUseGlobalStats
+    ? totalMessages > 0 ? (totalReplies / totalMessages) * 100 : 0
+    : actualHistoryEntries.length > 0 ? (totalReplies / actualHistoryEntries.length) * 100 : 0
+  
   const bestMethod = typeStats[0]?.type || "N/A"
   const bestMethodRate = typeStats[0]?.replyRate || 0
   const worstMethod = typeStats[typeStats.length - 1]?.type || "N/A"
   const worstMethodRate = typeStats[typeStats.length - 1]?.replyRate || 0
 
   const globalSummaryData = {
-    weeksAnalyzed: weeklyStats.length,
+    weeksAnalyzed: shouldUseGlobalStats ? "Toutes" : weeklyStats.length,
   }
 
   // Générer le titre dynamique
@@ -74,7 +99,7 @@ export const GlobalSummary = ({ historyEntries, typeStats, weeklyStats, filterIn
         {/* Messages totaux */}
         <MetricCard
           title="Messages envoyés"
-          value={historyEntries.length.toLocaleString()}
+          value={totalMessages.toLocaleString()}
           icon="📧"
           iconBg="bg-blue-50"
           iconColor="text-blue-600"
@@ -199,4 +224,3 @@ export const GlobalSummary = ({ historyEntries, typeStats, weeklyStats, filterIn
     </div>
   )
 }
-
