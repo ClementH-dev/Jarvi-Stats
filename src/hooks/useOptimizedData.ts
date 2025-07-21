@@ -36,6 +36,7 @@ export const useOptimizedData = (needsFullData = false) => {
     return [
       {
         type: "EMAIL_SENT",
+        name: "Email",
         total: globalStats.emailStats.sent,
         replied: globalStats.emailStats.replied,
         replyRate: parseFloat(globalStats.emailStats.responseRate),
@@ -43,6 +44,7 @@ export const useOptimizedData = (needsFullData = false) => {
       },
       {
         type: "LINKEDIN_MESSAGE_SENT", 
+        name: "LinkedIn Message",
         total: globalStats.linkedinMessageStats.sent,
         replied: globalStats.linkedinMessageStats.replied,
         replyRate: parseFloat(globalStats.linkedinMessageStats.responseRate),
@@ -50,6 +52,7 @@ export const useOptimizedData = (needsFullData = false) => {
       },
       {
         type: "LINKEDIN_INMAIL_SENT",
+        name: "LinkedIn InMail",
         total: globalStats.linkedinInmailStats.sent, 
         replied: globalStats.linkedinInmailStats.replied,
         replyRate: parseFloat(globalStats.linkedinInmailStats.responseRate),

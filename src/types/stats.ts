@@ -23,6 +23,7 @@ export type WeeklyStats = {
 
 export type TypeStats = {
   type: string
+  name: string
   total: number
   replied: number
   replyRate: number

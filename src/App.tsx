@@ -8,7 +8,7 @@ function App() {
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">Jarvi Stats</h1>
             <p className="text-slate-600 text-sm sm:text-base">
-              Application de test technique - Nhost + React + TypeScript
+              Vos statistiques en un coup d'œil - Analyse des performances de vos approches
             </p>
           </div>
         </div>

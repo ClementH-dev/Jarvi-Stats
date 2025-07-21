@@ -46,9 +46,9 @@ export const GlobalSummary = ({ typeStats, weeklyStats, filterInfo, globalStats,
     ? totalMessages > 0 ? (totalReplies / totalMessages) * 100 : 0
     : actualHistoryEntries.length > 0 ? (totalReplies / actualHistoryEntries.length) * 100 : 0
   
-  const bestMethod = typeStats[0]?.type || "N/A"
+  const bestMethod = typeStats[0]?.name || "N/A"
   const bestMethodRate = typeStats[0]?.replyRate || 0
-  const worstMethod = typeStats[typeStats.length - 1]?.type || "N/A"
+  const worstMethod = typeStats[typeStats.length - 1]?.name || "N/A"
   const worstMethodRate = typeStats[typeStats.length - 1]?.replyRate || 0
 
   const globalSummaryData = {
@@ -124,7 +124,6 @@ export const GlobalSummary = ({ typeStats, weeklyStats, filterInfo, globalStats,
           iconBg={replyTrend.bg}
           iconColor={replyTrend.color}
           subtitle="Performance globale"
-          trend={globalReplyRate >= 50 ? "positive" : globalReplyRate >= 30 ? "neutral" : "negative"}
         />
 
         {/* Semaines analysées */}

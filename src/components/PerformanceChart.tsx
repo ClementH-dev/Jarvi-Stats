@@ -95,7 +95,7 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
             const animatedRate = animatedStats.find((stat) => stat.type === item.type)?.replyRate || 0
 
             return (
-              <div key={item.type} className="group hover:bg-slate-50 rounded-lg p-4 transition-all duration-200">
+              <div key={item.name} className="group hover:bg-slate-50 rounded-lg p-4 transition-all duration-200">
                 {/* Header de la barre */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-3">
@@ -103,7 +103,7 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
                       <div
                         className={`w-3 h-3 rounded-full bg-gradient-to-r ${getBarColor(index)}`}
                       ></div>
-                      <h3 className="font-semibold text-slate-800 group-hover:text-slate-900">{item.type}</h3>
+                      <h3 className="font-semibold text-slate-800 group-hover:text-slate-900">{item.name}</h3>
                     </div>
                     <div
                       className={`px-2 py-1 rounded-full text-xs font-medium ${performance.bg} ${performance.color}`}
@@ -183,7 +183,7 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
           </div>
           {typeStats.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xl font-bold text-green-900">{typeStats[0].type}</p>
+              <p className="text-xl font-bold text-green-900">{typeStats[0].name}</p>
               <p className="text-green-700">
                 <span className="font-semibold">{typeStats[0].replyRate.toFixed(1)}%</span> de taux de réponse
               </p>
@@ -204,7 +204,7 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
           </div>
           {typeStats.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xl font-bold text-blue-900">{typeStats[typeStats.length - 1].type}</p>
+              <p className="text-xl font-bold text-blue-900">{typeStats[typeStats.length - 1].name}</p>
               <p className="text-blue-700">
                 Potentiel de{" "}
                 <span className="font-semibold">
@@ -214,24 +214,6 @@ export const PerformanceChart = ({ typeStats }: PerformanceChartProps) => {
               <p className="text-sm text-blue-600">En appliquant les meilleures pratiques</p>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Légende */}
-      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-        <div className="flex items-center justify-center space-x-6 text-sm text-slate-600">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-slate-400 rounded-full"></div>
-            <span>Ligne de moyenne</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-green-600">↗️</span>
-            <span>Au-dessus de la moyenne</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-red-600">↘️</span>
-            <span>En-dessous de la moyenne</span>
-          </div>
         </div>
       </div>
     </div>

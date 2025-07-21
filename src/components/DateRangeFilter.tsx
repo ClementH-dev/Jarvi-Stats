@@ -133,7 +133,7 @@ export const DateRangeFilter = ({ onFilterChange }: DateRangeFilterProps) => {
 
       {/* Raccourcis rapides */}
       <div className="mt-6 pt-4 border-t border-blue-200">
-        <p className="text-sm font-medium text-slate-600 mb-3">🚀 Raccourcis rapides :</p>
+        <p className="text-sm font-medium text-slate-600 mb-3">Raccourcis rapides :</p>
         <div className="flex flex-wrap gap-2">
           <QuickFilterButton
             label="7 derniers jours"
