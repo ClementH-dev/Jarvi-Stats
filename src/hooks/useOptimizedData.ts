@@ -1,5 +1,4 @@
 import { useGlobalStats } from './useGlobalStats'
-import { useHistoryEntries } from './useHistoryEntries'
 import { useTypeStats } from './useTypeStats'
 import { useMemo, useState, useEffect } from 'react'
 import { apolloClient } from '../lib/apollo'
@@ -15,14 +14,6 @@ export const useOptimizedData = (needsFullData = false) => {
     isStatsReady 
   } = useGlobalStats()
   
-  // Hook pour la première page
-  const {
-    historyEntries,
-    loading: dataLoading,
-    error: dataError,
-    isDataReady,
-    loadedCount
-  } = useHistoryEntries({ shouldLoad: needsFullData })
 
   // Chargement massif en parallèle
   const PAGE_SIZE = 10000
@@ -84,7 +75,7 @@ export const useOptimizedData = (needsFullData = false) => {
   }, [needsFullData, isStatsReady, totalCount, isAllLoaded, loadingAll])
 
   // Hook traditionnel pour les filtres
-  const traditionalTypeStats = useTypeStats(needsFullData ? (isAllLoaded ? allEntries : historyEntries) : [])
+  const traditionalTypeStats = useTypeStats(needsFullData ? allEntries : [])
   
   const optimizedTypeStats = useMemo((): TypeStats[] => {
     if (!isStatsReady) return []
@@ -125,23 +116,19 @@ export const useOptimizedData = (needsFullData = false) => {
     isStatsReady,
 
     // Données complètes
-    historyEntries: needsFullData
-      ? (isAllLoaded ? allEntries : historyEntries)
-      : historyEntries,
-    dataLoading,
-    dataError,
-    isDataReady: needsFullData ? isAllLoaded : isDataReady,
-    loadedCount: needsFullData
-      ? (isAllLoaded ? allEntries.length : loadedCount)
-      : loadedCount,
+    historyEntries: allEntries,
+    dataLoading: loadingAll,
+    dataError: undefined,
+    isDataReady: isAllLoaded,
+    loadedCount: allEntries.length,
 
     // TypeStats 
     optimizedTypeStats,
     traditionalTypeStats,
 
     // Status général
-    isFullyLoaded: isStatsReady && (needsFullData ? isAllLoaded : isDataReady),
-    hasErrors: !!statsError || !!dataError,
+    isFullyLoaded: isStatsReady && isAllLoaded,
+    hasErrors: !!statsError,
 
     // Helper pour déterminer quelle donnée utiliser
     shouldUseGlobalStats: (isFiltered: boolean) => !isFiltered && isStatsReady,
