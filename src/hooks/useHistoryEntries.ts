@@ -6,14 +6,15 @@ interface HistoryEntriesResponse {
 }
 
 const GET_HISTORY_ENTRIES = gql`
-  query GetHistoryEntries {
-    # Toutes les données pour l'affichage et les filtres - chargement en arrière-plan
+  query GetHistoryEntries($limit: Int!, $offset: Int!) {
     historyentries(
       where: {
         userId: {_eq: "32ca93da-0cf6-4608-91e7-bc6a2dbedcd1"}
         type: { _in: ["EMAIL_SENT", "LINKEDIN_MESSAGE_SENT", "LINKEDIN_INMAIL_SENT"] }
       }
       order_by: {createdAt: desc}
+      limit: $limit
+      offset: $offset
     ) {
       id
       createdAt
@@ -25,26 +26,22 @@ const GET_HISTORY_ENTRIES = gql`
   }
 `
 
-export const useHistoryEntries = (shouldLoad = true) => {
+export const useHistoryEntries = ({ shouldLoad = true, limit = 100, offset = 0 }) => {
   const { loading, error, data } = useQuery<HistoryEntriesResponse>(GET_HISTORY_ENTRIES, {
-    // Cache
+    variables: { limit, offset },
     fetchPolicy: 'cache-first',
-    // Ne pas notifier les changements de statut 
     notifyOnNetworkStatusChange: false,
     errorPolicy: 'all',
-    // Chargement conditionnel
     skip: !shouldLoad
   })
-  
+
   const historyEntries = data?.historyentries || []
-  
+
   return {
     loading,
     error,
     historyEntries,
-    // Indicateur pour savoir si les données complètes sont prêtes
     isDataReady: !loading && !error,
-    // Nombre d'entrées chargées pour debug/info
     loadedCount: historyEntries.length
   }
 }

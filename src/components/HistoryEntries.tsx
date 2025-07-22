@@ -25,6 +25,7 @@ export const HistoryEntries = () => {
     statsError,
     dataError,
     isStatsReady,
+    isFullyLoaded,
     getTypeStats,
     shouldUseGlobalStats
   } = useOptimizedData(true)
@@ -168,7 +169,7 @@ export const HistoryEntries = () => {
 
           {activeTab === "table" && (
             <div className="animate-fadeIn">
-              {dataLoading ? (
+              {!isFullyLoaded ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
                   <p className="text-slate-600">Chargement des données du tableau...</p>
@@ -181,7 +182,7 @@ export const HistoryEntries = () => {
 
           {activeTab === "comparison" && (
             <div className="animate-fadeIn">
-              {dataLoading ? (
+              {!isFullyLoaded ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
                   <p className="text-slate-600">Chargement des données de comparaison...</p>
