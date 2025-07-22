@@ -62,46 +62,35 @@ export const WeeklyStatsTable = ({ weeklyStats, typeStats }: WeeklyStatsTablePro
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>Statistiques par Semaine</h2>
-        
-        {/* Toggle View Mode */}
-        <div style={{ display: 'flex', border: '1px solid #ddd', borderRadius: '5px' }}>
+      {/* Header responsive */}
+      <div className="flex flex-wrap gap-3 items-center justify-between mb-5">
+        <h2 className="text-lg md:text-xl font-semibold flex-1 text-left md:text-left text-center w-full md:w-auto mb-2 md:mb-0">
+          Statistiques par Semaine
+        </h2>
+        <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
           {viewMode === 'table' && (
             <button
               onClick={() => exportToCSV(weeklyStats, typeStats)}
-              className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 text-sm font-medium me-2"
+              className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 text-sm font-medium w-full md:w-auto"
             >
               <span>📊</span>
               <span>Exporter CSV</span>
             </button>
           )}
-          <button
-            onClick={() => setViewMode('table')}
-            style={{
-              padding: '8px 16px',
-              border: 'none',
-              backgroundColor: viewMode === 'table' ? '#007bff' : '#f8f9fa',
-              color: viewMode === 'table' ? 'white' : '#333',
-              cursor: 'pointer',
-              borderRadius: '5px 0 0 5px'
-            }}
-          >
-            📋 Tableau
-          </button>
-          <button
-            onClick={() => setViewMode('chart')}
-            style={{
-              padding: '8px 16px',
-              border: 'none',
-              backgroundColor: viewMode === 'chart' ? '#007bff' : '#f8f9fa',
-              color: viewMode === 'chart' ? 'white' : '#333',
-              cursor: 'pointer',
-              borderRadius: '0 5px 5px 0'
-            }}
-          >
-            📈 Graphique
-          </button>
+          <div className="flex flex-row w-full md:w-auto">
+            <button
+              onClick={() => setViewMode('table')}
+              className={`px-4 py-2 font-medium border-none rounded-l-lg min-w-[110px] ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'} transition-colors duration-200`}
+            >
+              📋 Tableau
+            </button>
+            <button
+              onClick={() => setViewMode('chart')}
+              className={`px-4 py-2 font-medium border-none rounded-r-lg min-w-[110px] ${viewMode === 'chart' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'} transition-colors duration-200`}
+            >
+              📈 Graphique
+            </button>
+          </div>
         </div>
       </div>
 

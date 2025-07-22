@@ -8,7 +8,7 @@ const getWeekStart = (date: Date): Date => {
   const day = d.getDay()
   
   // Calculer combien de jours reculer pour arriver au lundi
-  const daysToSubtract = day === 0 ? 6 : day - 1 // Dimanche = 6 jours, Lundi = 0, Mardi = 1, etc.
+  const daysToSubtract = day === 0 ? 6 : day - 1
   
   // Créer une nouvelle date pour éviter les mutations
   const weekStart = new Date(d.getFullYear(), d.getMonth(), d.getDate() - daysToSubtract)
@@ -30,7 +30,7 @@ const getWeekStart = (date: Date): Date => {
   }
 
   const weeklyStats = useMemo(() => {
-    // ✅ OPTIMISATION CRITIQUE : retour anticipé pour éviter les calculs inutiles
+    //retour anticipé pour éviter les calculs inutiles
     if (!historyEntries || historyEntries.length === 0) return []
     
     const weeklyMap: Record<string, WeeklyStats> = {}

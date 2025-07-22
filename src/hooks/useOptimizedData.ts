@@ -6,11 +6,6 @@ import { apolloClient } from '../lib/apollo'
 import { gql } from '@apollo/client'
 import type { TypeStats, HistoryEntry } from '../types/stats'
 
-/**
- * Hook composé qui gère le chargement optimisé des données :
- * - Stats globales chargées en priorité (ultra rapide)
- * - Données complètes chargées SEULEMENT quand nécessaire (évite freeze)
- */
 export const useOptimizedData = (needsFullData = false) => {
   // Hook rapide pour les stats
   const { 
@@ -81,8 +76,6 @@ export const useOptimizedData = (needsFullData = false) => {
         }
         setAllEntries(all)
         setIsAllLoaded(true)
-      } catch {
-        // Erreur ignorée
       } finally {
         setLoadingAll(false)
       }
